@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Timber", "Timber.vcxproj", "{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}"
 EndProject
@@ -13,8 +13,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x64.ActiveCfg = Debug|x64
-		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x64.Build.0 = Debug|x64
+		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x64.ActiveCfg = Debug|Win32
+		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x64.Build.0 = Debug|Win32
 		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x86.ActiveCfg = Debug|Win32
 		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Debug|x86.Build.0 = Debug|Win32
 		{A935B7CA-C54A-4D36-A88A-CEBFD9028F63}.Release|x64.ActiveCfg = Release|x64
