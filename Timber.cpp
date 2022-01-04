@@ -130,7 +130,60 @@ int main()
         branches[i].setOrigin(220, 20);
     }
 
+    // PLAYER --------------------------------------------
+    Texture texturePlayer;
+    texturePlayer.loadFromFile("graphics/player.png");
+
+    Sprite spritePlayer;
+    spritePlayer.setTexture(texturePlayer);
+    spritePlayer.setPosition(580, 720);
+
+    side playerSide = side::LEFT;
+
+    // GRAVESTONE ------------------------------------------
+    Texture textureRIP;
+    textureRIP.loadFromFile("graphics/rip.png");
+    
+    Sprite spriteRIP;
+    spriteRIP.setTexture(textureRIP);
+    spriteRIP.setPosition(600, 860);
+
+    // AXE ------------------------------------------------
+    Texture textureAxe;
+    textureAxe.loadFromFile("graphics/axe.png");
+
+    Sprite spriteAxe;
+    spriteAxe.setTexture(textureAxe);
+    spriteAxe.setPosition(700, 830);
+
+    const float AXE_POSITION_LEFT = 700.0f;
+    const float AXE_POSITION_RIGHT = 1075.0f;
+
+    // LOG ------------------------------------------------
+    Texture textureLog;
+    textureLog.loadFromFile("graphics/log.png");
+
+    Sprite spriteLog;
+    spriteLog.setTexture(textureLog);
+    spriteLog.setPosition(810, 720);
+
+    bool logActive = false;
+    float logSpeedX = 1000.0f;
+    float logSpeedY = -1500.0f;
+
+    bool acceptInput = false;
+
     while (window.isOpen()) {
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::KeyReleased && !paused) {
+                acceptInput = true;
+
+                spriteAxe.setPosition(2000,
+                    spriteAxe.getPosition().y);
+            }
+        }
+
         if (Keyboard::isKeyPressed(Keyboard::Escape)) {
             window.close();
         }
@@ -140,6 +193,54 @@ int main()
 
             score = 0;
             timeRemaining = 6.0f;
+
+            for (int i = 1; i < NUM_BRANCHES; i++) {
+                branchPositions[i] = side::NONE;
+            }
+
+            spriteRIP.setPosition(675, 2000);
+            spritePlayer.setPosition(580, 720);
+
+            acceptInput = true;
+
+            if (acceptInput) {
+                if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                    playerSide = side::RIGHT;
+                    score++;
+
+                    timeRemaining += (2 / score) + 0.15f;
+
+                    spriteAxe.setPosition(AXE_POSITION_RIGHT,
+                        spriteAxe.getPosition().y);
+                    spritePlayer.setPosition(1200, 720);
+
+                    updateBranches(score);
+
+                    spriteLog.setPosition(810, 720);
+                    logSpeedX = -5000.0f;
+                    logActive = true;
+
+                    acceptInput = false;
+                }
+                else if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                    playerSide = side::LEFT;
+                    score++;
+
+                    timeRemaining += (2 / score) + 0.15f;
+
+                    spriteAxe.setPosition(AXE_POSITION_LEFT,
+                        spriteAxe.getPosition().y);
+                    spritePlayer.setPosition(580, 720);
+
+                    updateBranches(score);
+
+                    spriteLog.setPosition(810, 720);
+                    logSpeedX = 5000;
+                    logActive = true;
+
+                    acceptInput = false;
+                }
+            }
         }
 
         window.clear();
@@ -265,9 +366,22 @@ int main()
                     branches[i].setPosition(3000, height);
                 }
             }
-        }
 
-        
+            if (logActive) {
+                spriteLog.setPosition(
+                    spriteLog.getPosition().x +
+                    (logSpeedX * dt.asSeconds()),
+                    spriteLog.getPosition().y +
+                    (logSpeedY * dt.asSeconds())
+                );
+
+                if (spriteLog.getPosition().x < -100 ||
+                    spriteLog.getPosition().x > 2000) {
+                    logActive = false;
+                    spriteLog.setPosition(810, 720);
+                }
+            }
+        }
 
         window.draw(spriteBackground);
         window.draw(spriteCloud1);
@@ -279,6 +393,10 @@ int main()
         }
 
         window.draw(spriteTree);
+        window.draw(spritePlayer);
+        window.draw(spriteAxe);
+        window.draw(spriteLog);
+        window.draw(spriteRIP);
         window.draw(spriteBee);
 
         window.draw(scoreText);
