@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 using namespace sf;
 
 void updateBranches(int seed);
@@ -156,8 +157,8 @@ int main()
     spriteAxe.setTexture(textureAxe);
     spriteAxe.setPosition(700, 830);
 
-    const float AXE_POSITION_LEFT = 700.0f;
-    const float AXE_POSITION_RIGHT = 1075.0f;
+    const float AXE_POSITION_LEFT = 700;
+    const float AXE_POSITION_RIGHT = 1075;
 
     // LOG ------------------------------------------------
     Texture textureLog;
@@ -168,10 +169,26 @@ int main()
     spriteLog.setPosition(810, 720);
 
     bool logActive = false;
-    float logSpeedX = 1000.0f;
-    float logSpeedY = -1500.0f;
+    float logSpeedX = 1000;
+    float logSpeedY = -1500;
 
     bool acceptInput = false;
+
+    // SOUNDS ----------------------------------------------
+    SoundBuffer chopBuffer;
+    chopBuffer.loadFromFile("sound/chop.wav");
+    Sound chop;
+    chop.setBuffer(chopBuffer);
+
+    SoundBuffer deathBuffer;
+    deathBuffer.loadFromFile("sound/death.wav");
+    Sound death;
+    death.setBuffer(deathBuffer);
+
+    SoundBuffer ootBuffer;
+    ootBuffer.loadFromFile("sound/out_of_time.wav");
+    Sound outOfTime;
+    outOfTime.setBuffer(ootBuffer);
 
     while (window.isOpen()) {
         Event event;
@@ -192,7 +209,7 @@ int main()
             paused = false;
 
             score = 0;
-            timeRemaining = 6.0f;
+            timeRemaining = 6;
 
             for (int i = 1; i < NUM_BRANCHES; i++) {
                 branchPositions[i] = side::NONE;
@@ -202,44 +219,48 @@ int main()
             spritePlayer.setPosition(580, 720);
 
             acceptInput = true;
+        }
 
-            if (acceptInput) {
-                if (Keyboard::isKeyPressed(Keyboard::Right)) {
-                    playerSide = side::RIGHT;
-                    score++;
+        if (acceptInput) {
+            if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                playerSide = side::RIGHT;
+                score++;
 
-                    timeRemaining += (2 / score) + 0.15f;
+                timeRemaining += (2 / score) + 0.15;
 
-                    spriteAxe.setPosition(AXE_POSITION_RIGHT,
-                        spriteAxe.getPosition().y);
-                    spritePlayer.setPosition(1200, 720);
+                spriteAxe.setPosition(AXE_POSITION_RIGHT,
+                    spriteAxe.getPosition().y);
+                spritePlayer.setPosition(1200, 720);
 
-                    updateBranches(score);
+                updateBranches(score);
 
-                    spriteLog.setPosition(810, 720);
-                    logSpeedX = -5000.0f;
-                    logActive = true;
+                spriteLog.setPosition(810, 720);
+                logSpeedX = -5000;
+                logActive = true;
 
-                    acceptInput = false;
-                }
-                else if (Keyboard::isKeyPressed(Keyboard::Left)) {
-                    playerSide = side::LEFT;
-                    score++;
+                acceptInput = false;
 
-                    timeRemaining += (2 / score) + 0.15f;
+                chop.play();
+            }
+            else if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                playerSide = side::LEFT;
+                score++;
 
-                    spriteAxe.setPosition(AXE_POSITION_LEFT,
-                        spriteAxe.getPosition().y);
-                    spritePlayer.setPosition(580, 720);
+                timeRemaining += (2 / score) + 0.15;
 
-                    updateBranches(score);
+                spriteAxe.setPosition(AXE_POSITION_LEFT,
+                    spriteAxe.getPosition().y);
+                spritePlayer.setPosition(580, 720);
 
-                    spriteLog.setPosition(810, 720);
-                    logSpeedX = 5000;
-                    logActive = true;
+                updateBranches(score);
 
-                    acceptInput = false;
-                }
+                spriteLog.setPosition(810, 720);
+                logSpeedX = 5000;
+                logActive = true;
+
+                acceptInput = false;
+
+                chop.play();
             }
         }
 
@@ -262,6 +283,8 @@ int main()
                     textRect.top +
                     textRect.height / 2.0f);
                 messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+
+                outOfTime.play();
             }
 
             // BEE -----------------------------------------
@@ -367,6 +390,7 @@ int main()
                 }
             }
 
+            // LOG -----------------------------------------------
             if (logActive) {
                 spriteLog.setPosition(
                     spriteLog.getPosition().x +
@@ -380,6 +404,25 @@ int main()
                     logActive = false;
                     spriteLog.setPosition(810, 720);
                 }
+            }
+
+            // BRANCHES ------------------------------------------
+            if (branchPositions[5] == playerSide) {
+                paused = true;
+                acceptInput = false;
+                
+                spriteRIP.setPosition(525, 760);
+                spritePlayer.setPosition(2000, 660);
+
+                messageText.setString("SQUISHED!");
+                FloatRect textRect = messageText.getLocalBounds();
+                messageText.setOrigin(textRect.left +
+                    textRect.width / 2.0f,
+                    textRect.top + textRect.height / 2.0f);
+                messageText.setPosition(1920 / 2.0f,
+                    1080 / 2.0f);
+
+                death.play();
             }
         }
 
