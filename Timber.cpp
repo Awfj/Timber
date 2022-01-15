@@ -211,7 +211,7 @@ int main()
             score = 0;
             timeRemaining = 6;
 
-            for (int i = 1; i < NUM_BRANCHES; i++) {
+            for (int i = 0; i < NUM_BRANCHES; i++) {
                 branchPositions[i] = side::NONE;
             }
 
